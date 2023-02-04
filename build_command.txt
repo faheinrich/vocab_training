@@ -1,0 +1,1 @@
+pyinstaller --windowed vocab_trainer_gui.py --add-data 'vocab_data/*.xlsx:.'

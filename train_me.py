@@ -23,7 +23,7 @@ def print_vocab(current_vocab: dict, lang_mode: str):
         ask_deutsch()
     elif lang_mode == "mix": 
         if random.random() > 0.5:
-            ask_japanisch()
+            ask_deutsch()
         else:
             ask_japanisch()
 
@@ -32,27 +32,20 @@ def print_scorebreak(idx):
     mid = '=' * (len(str(idx)) + 2)
     print(f"\n{br}{mid}{br}\n{br} {idx} {br}\n{br}{mid}{br}\n\n")
 
-def main():
-    lang_mode = None
-    if len(sys.argv) > 1:
-            lang_mode = sys.argv[1]
-    while lang_mode is None:
-        user_input = input("Sprache eingeben [japanisch | deutsch | mix]: ")
-        if user_input in {"japanisch", "deutsch", "mix"}:
-            lang_mode = user_input
+def load_vocab_data():
 
     file_paths = []
-    file_paths.append("vocab_data/A1T1.xlsx")
-    file_paths.append("vocab_data/Vok1.xlsx")
-    file_paths.append("vocab_data/Vok2.xlsx")
-    file_paths.append("vocab_data/Vok3.xlsx")
-    file_paths.append("vocab_data/Vok4.xlsx")
-    file_paths.append("vocab_data/Vok5.xlsx")
-    file_paths.append("vocab_data/Vok6.xlsx")
-    file_paths.append("vocab_data/Zaehlen.xlsx")
-    file_paths.append("vocab_data/Verben.xlsx")
-    file_paths.append("vocab_data/mehr_verben.xlsx")
-    file_paths.append("vocab_data/noch_mehr_verben.xlsx")
+    file_paths.append("/Users/fabian/vocab_training/vocab_data/A1T1.xlsx")
+    # file_paths.append("vocab_data/Vok1.xlsx")
+    # file_paths.append("vocab_data/Vok2.xlsx")
+    # file_paths.append("vocab_data/Vok3.xlsx")
+    # file_paths.append("vocab_data/Vok4.xlsx")
+    # file_paths.append("vocab_data/Vok5.xlsx")
+    # file_paths.append("vocab_data/Vok6.xlsx")
+    # file_paths.append("vocab_data/Zaehlen.xlsx")
+    # file_paths.append("vocab_data/Verben.xlsx")
+    # file_paths.append("vocab_data/mehr_verben.xlsx")
+    # file_paths.append("vocab_data/noch_mehr_verben.xlsx")
 
     vocab_filtered = []
 
@@ -74,7 +67,21 @@ def main():
 
     num_vocab = len(vocab_filtered)
     print(f"{num_vocab} Vokabeln geladen.\n")
-    
+
+    return vocab_filtered
+
+
+def main():
+    lang_mode = None
+    if len(sys.argv) > 1:
+            lang_mode = sys.argv[1]
+    while lang_mode is None:
+        user_input = input("Sprache eingeben [japanisch | deutsch | mix]: ")
+        if user_input in {"japanisch", "deutsch", "mix"}:
+            lang_mode = user_input
+
+    vocab_filtered = load_vocab_data()
+
     vocab_count = 0
     while True:
         vocab_dict = random.choice(vocab_filtered)
