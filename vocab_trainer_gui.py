@@ -1,37 +1,75 @@
 from pathlib import Path
-import pandas as pd
+# import pandas as pd
 import random
 import sys
 from PyQt6.QtCore import QSize
 from PyQt6.QtWidgets import QMainWindow, QHBoxLayout, QVBoxLayout, QWidget, QApplication, QPushButton, QLabel, QCheckBox
 from PyQt6.QtGui import QFont
+import csv
 
-def get_file_paths():
+def get_file_paths_csv():
     path_to_data = Path(sys.argv[0]).parent / Path("vocab_data")
-    file_paths = path_to_data.glob("*.xlsx")
+    file_paths = path_to_data.glob("*.csv")
+
     return file_paths
 
+# def get_file_paths_xlsx():
+#     path_to_data = Path(sys.argv[0]).parent / Path("vocab_data/xlsx")
+#     file_paths = path_to_data.glob("*.xlsx")
+#
+#     return file_paths
 
-def load_vocab_data(file_paths):
+# def convert_xlsx_to_csv(fp):
+#
+#     print("Orig", fp)
+#     new_fp = fp.parent / Path(str(fp.stem) + ".csv")
+#
+#     with open(new_fp, 'w', newline='') as csvfile:
+#         writer = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+#
+#         df = pd.read_excel(fp)
+#         for idx, hiragana, kanji, deutsch in df.itertuples():
+#             writer.writerow([deutsch, hiragana, kanji])
+#
+#     print("Converting excel file to csv.")
+#
+# def load_vocab_data_xlsx(file_paths):
+#
+#     vocab_filtered = []
+#
+#     for fp in file_paths:
+#         df = pd.read_excel(fp)
+#         for idx, hiragana, kanji, deutsch in df.itertuples():
+#
+#             if not isinstance(hiragana, str) or not isinstance(deutsch, str):
+#                 continue
+#             if not isinstance(kanji, str):
+#                 kanji = ""
+#
+#             vocab_dict = {"hiragana": hiragana,
+#                           "kanji": kanji,
+#                           "deutsch": deutsch}
+#             vocab_filtered.append(vocab_dict)
+#
+#     return vocab_filtered
 
+
+def load_vocab_data_csv(file_paths):
     vocab_filtered = []
 
     for fp in file_paths:
-        df = pd.read_excel(fp)
-        for idx, hiragana, kanji, deutsch in df.itertuples():
 
-            if not isinstance(hiragana, str) or not isinstance(deutsch, str):
-                continue
-            if not isinstance(kanji, str):
-                kanji = ""
+        with open(fp, newline='') as csvfile:
+            reader = csv.reader(csvfile, delimiter=';', quotechar='|')
 
-            vocab_dict = {"hiragana": hiragana,
-                          "kanji": kanji,
-                          "deutsch": deutsch}
-            vocab_filtered.append(vocab_dict)
+            for row in reader:
+                if len(row) == 3:
+                    vocab_dict = {"hiragana": row[1],
+                                  "kanji": row[2],
+                                  "deutsch": row[0]}
+                    vocab_filtered.append(vocab_dict)
 
     return vocab_filtered
-
 
 class VocabGui(QMainWindow):
 
@@ -103,7 +141,7 @@ class VocabGui(QMainWindow):
         container.setLayout(main_layout)
         self.setCentralWidget(container)
 
-        self.vocabs = load_vocab_data(get_file_paths())
+        self.vocabs = load_vocab_data_csv(get_file_paths_csv())
         self.update_font_size(0)
         self.display_next_vocab()
 
@@ -116,7 +154,7 @@ class VocabGui(QMainWindow):
         self.vocab_answer.setFont(font)
 
     def update_vocab_list(self, file_paths):
-        self.vocabs = load_vocab_data(file_paths)
+        self.vocabs = load_vocab_data_csv(file_paths)
 
     def show_vocab_selector(self):
         if self.choose_vocab is None:
@@ -183,7 +221,7 @@ class AnotherWindow(QWidget):
         self.warn_empty.setStyleSheet("color: red;")
         self.warn_empty.hide()
 
-        self.file_paths = [i for i in get_file_paths()]
+        self.file_paths = [i for i in get_file_paths_csv()]
         self.checkboxes = []
 
         selector_layout = QVBoxLayout()
